@@ -5,70 +5,77 @@ A lightweight macOS remote control server that lets you control media playback f
 ## Architecture
 
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Your Phone     │────▶│  Go Server       │────▶│  macOS System   │
-│  (browser)      │     │  (API only)      │     │  (osascript)    │
-└────────┬────────┘     └──────────────────┘     └─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│  GitHub Pages   │  ← UI hosted here, update by pushing to repo
-│  ui/index.html  │
-└─────────────────┘
+┌─────────────────┐         ┌──────────────────┐         ┌─────────────────┐
+│  Your Phone     │────────▶│  Go Server       │────────▶│  macOS System   │
+│  (browser)      │         │  (port 9876)     │         │  (osascript)    │
+└─────────────────┘         └────────┬─────────┘         └─────────────────┘
+                                     │
+                            On startup, fetches UI from:
+                                     │
+                                     ▼
+                     ┌───────────────────────────────┐
+                     │  GitHub Raw                   │
+                     │  raw.githubusercontent.com/   │
+                     │  .../main/ui/index.html       │
+                     └───────────────────────────────┘
 ```
 
-- **Server**: Go HTTP API server (port 9876) running on macOS target
-- **UI**: Hosted on GitHub Pages - update by pushing, no rebuild needed
-- **System Integration**: Uses `osascript` (AppleScript) for macOS control
+**How it works:**
+1. Go server starts and fetches `ui/index.html` from GitHub
+2. Serves that UI at `/` over HTTP
+3. UI makes API calls to the same server (relative paths)
+4. If GitHub fetch fails (offline), falls back to embedded UI
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `media_remote.go` | Go API server (no embedded UI) |
-| `media_remote.py` | Python alternative (simpler, port 8080) |
-| `ui/index.html` | Remote UI (hosted on GitHub Pages) |
-
-## Usage
-
-### On the target Mac (one-time setup):
-```bash
-go build -o media-remote media_remote.go
-./media-remote
-# Note the server address shown (e.g., 192.168.1.100:9876)
-```
-
-### On your phone:
-1. Open https://tomreinert.github.io/media-remote/ui/
-2. Enter the server address from above
-3. (Optional) Add to Home Screen for fullscreen experience
+| `media_remote.go` | Go server - fetches UI from GitHub, serves API |
+| `ui/index.html` | The UI - edit this on GitHub to update remotely |
 
 ## Updating the UI
 
-Just push changes to `ui/index.html` - GitHub Pages auto-deploys. No need to touch the target Mac.
+1. Edit `ui/index.html` on GitHub (or push changes)
+2. Wait ~1-2 min for GitHub's raw CDN cache to clear
+3. On target Mac: `pkill media-remote && ./media-remote`
+
+No rebuild needed - the server fetches fresh UI on each restart.
+
+## Initial Setup (target Mac)
+
+```bash
+# Build (one-time, or after changing media_remote.go)
+GOARCH=amd64 go build -o media-remote-intel media_remote.go
+
+# Run
+./media-remote
+
+# Stop
+pkill media-remote
+```
+
+## On Your Phone
+
+Just open the URL shown when the server starts:
+```
+http://<ip>:9876
+```
+Add to Home Screen for fullscreen experience.
 
 ## API Endpoints
 
 | Endpoint | Action |
 |----------|--------|
+| `/` | Serves the UI |
 | `/ping` | Health check (returns "pong") |
 | `/setup` | Trigger macOS permission dialogs |
-| `/toggle` | Play/Pause (spacebar) |
+| `/toggle` | Play/Pause (spacebar keystroke) |
 | `/vol-up` | Volume +10 |
 | `/vol-down` | Volume -10 |
-
-## Build (both architectures)
-
-```bash
-# ARM64 (Apple Silicon)
-go build -o media-remote media_remote.go
-
-# Intel x86_64
-GOARCH=amd64 go build -o media-remote-intel media_remote.go
-```
 
 ## Requirements
 
 - macOS (uses AppleScript for system control)
 - Accessibility permissions (System Settings → Privacy & Security → Accessibility)
-- Go 1.21+ for building
+- Go 1.21+ for building (not needed if using pre-built binary)
+- Internet connection on target Mac (for fetching UI from GitHub)
