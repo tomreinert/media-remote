@@ -53,13 +53,20 @@ func fetchUI() string {
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(uiURL)
 	if err != nil {
+		fmt.Println("Failed to fetch UI:", err)
 		return ""
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
+	if resp.StatusCode != 200 {
+		fmt.Println("Failed to fetch UI: status", resp.StatusCode)
 		return ""
 	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Failed to read UI response:", err)
+		return ""
+	}
+	fmt.Println("UI fetched successfully from GitHub")
 	return string(body)
 }
 
@@ -89,9 +96,11 @@ const fallbackUI = `<!DOCTYPE html>
         .row button { flex: 1; max-width: 45vw; }
         .row-3 button { max-width: 30vw; padding: 5vw 2vw; font-size: 4.5vw; }
         .section-label { font-size: 3vw; color: #666; margin-top: 2vw; margin-bottom: -1vw; }
+        .title { font-size: 5vw; color: #fff; font-weight: 600; margin-bottom: auto; }
     </style>
 </head>
 <body>
+    <div class="title">Remote</div>
     <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
     <div class="row">
         <button onclick="fetch('/vol-down')">Vol -</button>
