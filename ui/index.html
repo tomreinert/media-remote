@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23333' width='100' height='100' rx='20'/><text y='.9em' x='50%' text-anchor='middle' font-size='70'>%E2%8F%AF</text></svg>">
+    <title>Remote</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4vw;
+            background: #000;
+            padding: 20px;
+        }
+        button {
+            font-size: 6vw;
+            padding: 6vw 8vw;
+            border-radius: 4vw;
+            border: none;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.1s ease, background 0.1s ease;
+        }
+        button:active,
+        button.pressed {
+            background: #444;
+            transform: scale(0.97);
+        }
+        .play-pause {
+            font-size: 8vw;
+            padding: 12vw 16vw;
+        }
+        .volume-row {
+            display: flex;
+            gap: 4vw;
+            width: 100%;
+            justify-content: center;
+        }
+        .volume-row button {
+            flex: 1;
+            max-width: 40vw;
+        }
+
+        /* Settings */
+        .settings-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            font-size: 20px;
+            padding: 10px;
+            background: transparent;
+            opacity: 0.5;
+        }
+        .settings-btn:active {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* Setup overlay */
+        .setup-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            gap: 20px;
+        }
+        .setup-overlay.hidden {
+            display: none;
+        }
+        .setup-overlay h2 {
+            color: #fff;
+            margin: 0;
+            font-size: 24px;
+        }
+        .setup-overlay p {
+            color: #888;
+            margin: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        .setup-overlay input {
+            font-size: 18px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            background: #111;
+            color: #fff;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+        .setup-overlay input:focus {
+            outline: none;
+            border-color: #666;
+        }
+        .setup-overlay button {
+            padding: 16px 40px;
+            font-size: 18px;
+        }
+
+        /* Status indicator */
+        .status {
+            position: fixed;
+            bottom: 20px;
+            font-size: 12px;
+            color: #444;
+        }
+        .status.connected {
+            color: #4a4;
+        }
+        .status.error {
+            color: #a44;
+        }
+    </style>
+</head>
+<body>
+    <button class="settings-btn" onclick="showSetup()">&#9881;</button>
+
+    <button class="play-pause" onclick="send('/toggle')">Play / Pause</button>
+    <div class="volume-row">
+        <button onclick="send('/vol-down')">Vol -</button>
+        <button onclick="send('/vol-up')">Vol +</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="setup-overlay" id="setup">
+        <h2>Connect to Mac</h2>
+        <p>Enter the server address shown when you started media-remote</p>
+        <input type="text" id="server-input" placeholder="192.168.1.100:9876"
+               inputmode="url" autocapitalize="none" autocorrect="off">
+        <button onclick="saveServer()">Connect</button>
+        <p style="margin-top: 20px; font-size: 12px;">
+            Tip: Add to Home Screen for fullscreen experience
+        </p>
+    </div>
+
+    <script>
+        let serverUrl = localStorage.getItem('mediaRemoteServer');
+
+        // Check URL params for server (allows sharing links)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('server')) {
+            serverUrl = params.get('server');
+            localStorage.setItem('mediaRemoteServer', serverUrl);
+        }
+
+        // Show setup if no server configured
+        if (!serverUrl) {
+            showSetup();
+        } else {
+            document.getElementById('setup').classList.add('hidden');
+            checkConnection();
+        }
+
+        function showSetup() {
+            document.getElementById('setup').classList.remove('hidden');
+            document.getElementById('server-input').value = serverUrl || '';
+            document.getElementById('server-input').focus();
+        }
+
+        function saveServer() {
+            let input = document.getElementById('server-input').value.trim();
+            if (!input) return;
+
+            // Clean up input - add http:// if missing, ensure port
+            if (!input.startsWith('http')) {
+                input = 'http://' + input;
+            }
+            if (!input.includes(':9876') && !input.match(/:\d+$/)) {
+                input += ':9876';
+            }
+
+            serverUrl = input;
+            localStorage.setItem('mediaRemoteServer', serverUrl);
+            document.getElementById('setup').classList.add('hidden');
+            checkConnection();
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('server-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') saveServer();
+        });
+
+        function setStatus(text, type) {
+            const el = document.getElementById('status');
+            el.textContent = text;
+            el.className = 'status ' + (type || '');
+        }
+
+        async function checkConnection() {
+            try {
+                const res = await fetch(serverUrl + '/ping', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                if (res.ok) {
+                    setStatus('Connected', 'connected');
+                }
+            } catch (e) {
+                setStatus('Not connected - tap gear to configure', 'error');
+            }
+        }
+
+        async function send(endpoint) {
+            if (!serverUrl) {
+                showSetup();
+                return;
+            }
+            try {
+                await fetch(serverUrl + endpoint, { mode: 'cors' });
+            } catch (e) {
+                setStatus('Connection failed', 'error');
+            }
+        }
+
+        // Periodic connection check
+        setInterval(checkConnection, 30000);
+    </script>
+</body>
+</html>

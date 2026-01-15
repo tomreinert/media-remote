@@ -40,22 +40,30 @@ func getLocalIP() string {
 	return conn.LocalAddr().(*net.UDPAddr).IP.String()
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
 
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next(w, r)
+	}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
+	case "/ping":
+		w.Write([]byte("pong"))
 	case "/setup":
-		// Trigger permission dialogs - run this from the Mac itself
 		fmt.Println("Running setup to trigger permissions...")
 		exec.Command("osascript", "-e", `tell application "Google Chrome" to get name`).Run()
 		exec.Command("osascript", "-e", `tell application "Safari" to get name`).Run()
 		exec.Command("osascript", "-e", `tell application "System Events" to get name`).Run()
-		w.Write([]byte(`<!DOCTYPE html><html><body style="font-family:-apple-system;padding:40px;">
-			<h1>Setup complete</h1>
-			<p>Approve any permission dialogs that appeared, then use the remote from your phone.</p>
-			<p><a href="/">Go to remote</a></p>
-		</body></html>`))
+		w.Write([]byte("OK"))
 	case "/toggle":
 		sendSpace()
 		fmt.Println("Toggle received")
@@ -68,80 +76,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		volumeDown()
 		fmt.Println("Volume down")
 		w.Write([]byte("OK"))
-	case "/":
-		w.Write([]byte(`<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Remote</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 4vw;
-            background: #000;
-            padding: 20px;
-        }
-        button {
-            font-size: 6vw;
-            padding: 6vw 8vw;
-            border-radius: 4vw;
-            border: none;
-            background: #333;
-            color: white;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            touch-action: manipulation;
-            transition: transform 0.1s ease, background 0.1s ease;
-        }
-        button:active,
-        button.pressed {
-            background: #444;
-            transform: scale(0.97);
-        }
-        .play-pause {
-            font-size: 8vw;
-            padding: 12vw 16vw;
-        }
-        .volume-row {
-            display: flex;
-            gap: 4vw;
-            width: 100%;
-            justify-content: center;
-        }
-        .volume-row button {
-            flex: 1;
-            max-width: 40vw;
-        }
-    </style>
-</head>
-<body>
-    <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
-    <div class="volume-row">
-        <button onclick="fetch('/vol-down')">Vol -</button>
-        <button onclick="fetch('/vol-up')">Vol +</button>
-    </div>
-</body>
-</html>`))
 	default:
-		http.NotFound(w, r)
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(`<!DOCTYPE html><html><body style="font-family:-apple-system;padding:40px;text-align:center;">
+			<h1>Media Remote API</h1>
+			<p>Server is running. Use the remote UI at:</p>
+			<p><a href="https://tomreinert.github.io/media-remote/ui/">tomreinert.github.io/media-remote/ui/</a></p>
+		</body></html>`))
 	}
 }
 
@@ -157,16 +98,18 @@ func main() {
 		cmd := exec.Command(os.Args[0], "--daemon")
 		cmd.Start()
 
-		fmt.Println("Media Remote started in background")
+		fmt.Println("Media Remote API started in background")
+		fmt.Println("\nServer address (enter this in the remote UI):")
 		if hostname != "" {
-			fmt.Printf("URL: http://%s.local:%s\n", hostname, port)
+			fmt.Printf("  %s.local:%s\n", hostname, port)
 		}
-		fmt.Printf("URL: http://%s:%s\n", ip, port)
+		fmt.Printf("  %s:%s\n", ip, port)
+		fmt.Println("\nRemote UI: https://tomreinert.github.io/media-remote/ui/")
 		fmt.Println("\nStop with: pkill media-remote")
 		return
 	}
 
 	// Running as daemon - start server silently
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", corsMiddleware(handler))
 	http.ListenAndServe(":"+port, nil)
 }
