@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,98 +13,74 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            gap: 4vw; background: #000; padding: 20px;
+            gap: 5vw; background: #000; padding: 20px;
         }
         button {
             border-radius: 16px; border: none;
-            background: #1c1c1e; color: white; cursor: pointer;
+            background: #333337; color: white; cursor: pointer;
             -webkit-tap-highlight-color: transparent; user-select: none;
             touch-action: manipulation;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: transform 0.08s ease, background 0.08s ease;
         }
-        button.pressed { background: #48484a; }
-        button .icon { line-height: 1; }
-        button .label { font-size: 3vw; color: #98989f; margin-top: 1.5vw; font-weight: 500; }
+        button.pressed { background: #1f1f22; }
+        button .label { font-size: 3vw; color: #98989f; margin-top: 1vw; font-weight: 500; }
 
-        .play-pause {
-            width: 44vw; height: 44vw; border-radius: 50%;
-            background: #2c2c2e;
-        }
-        .play-pause .icon { font-size: 12vw; }
-        .play-pause.pressed { background: #48484a; }
+        .play-pause { width: 44vw; height: 44vw; border-radius: 50%; background: #2c2c2e; }
+        .play-pause.pressed { background: #1f1f22; }
+        .play-pause svg { width: 12vw; height: 12vw; }
 
         .row { display: flex; gap: 3vw; }
         .row button { width: 22vw; height: 22vw; }
-        .row .icon { font-size: 8vw; }
-        .mute-icon { font-size: 6vw !important; }
+        .row svg { width: 8vw; height: 8vw; }
+        .mute-btn svg { width: 6vw; height: 6vw; }
 
         .section-label { font-size: 3.5vw; color: #636366; margin-top: 3vw; margin-bottom: -1vw; font-weight: 500; }
 
         .row-small button { width: 22vw; height: 18vw; }
-        .row-small .icon { font-size: 6vw; }
+        .row-small svg { width: 6vw; height: 6vw; }
         .row-small .label { font-size: 2.8vw; }
 
-        /* Simple SVG icons as backgrounds */
-        .icon svg { width: 1em; height: 1em; fill: currentColor; }
+        svg { fill: currentColor; }
     </style>
 </head>
 <body>
     <button class="play-pause" data-action="/toggle">
-        <span class="icon">
-            <svg viewBox="0 0 24 24"><rect x="5" y="5" width="4" height="14" rx="1"/><path d="M12 5v14l8-7z"/></svg>
-        </span>
+        <svg style="margin-left: 6px;" viewBox="0 0 24 24"><rect x="5" y="5" width="4" height="14" rx="1"/><path d="M12 5v14l8-7z"/></svg>
     </button>
 
     <div class="row">
         <button data-action="/vol-down">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-            </span>
-            <span class="label">Vol −</span>
+            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <span class="label">Vol -</span>
         </button>
-        <button data-action="/mute">
-            <span class="icon mute-icon">
-                <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-            </span>
+        <button class="mute-btn" data-action="/mute">
+            <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
             <span class="label">Mute</span>
         </button>
         <button data-action="/vol-up">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-            </span>
+            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             <span class="label">Vol +</span>
         </button>
     </div>
 
     <div class="row">
         <button data-action="/fullscreen">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-            </span>
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             <span class="label">Fullscreen</span>
         </button>
     </div>
 
-    <div class="section-label">Zattoo</div>
+    <div class="section-label">Sender</div>
     <div class="row row-small">
         <button data-action="/ch-down">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </span>
-            <span class="label">CH −</span>
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
         </button>
         <button data-action="/ch-list">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-            </span>
-            <span class="label">List</span>
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
         <button data-action="/ch-up">
-            <span class="icon">
-                <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </span>
-            <span class="label">CH +</span>
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
         </button>
     </div>
 
