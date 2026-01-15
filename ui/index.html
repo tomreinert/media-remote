@@ -160,7 +160,9 @@
     </div>
 
     <script>
-        let serverUrl = localStorage.getItem('mediaRemoteServer');
+        // If served from the Go server (HTTP), use relative paths - no setup needed
+        const isLocalServer = location.protocol === 'http:';
+        let serverUrl = isLocalServer ? '' : localStorage.getItem('mediaRemoteServer');
 
         // Check URL params for server (allows sharing links)
         const params = new URLSearchParams(window.location.search);
@@ -169,8 +171,12 @@
             localStorage.setItem('mediaRemoteServer', serverUrl);
         }
 
-        // Show setup if no server configured
-        if (!serverUrl) {
+        // Show setup only if served from HTTPS (GitHub Pages) and no server configured
+        if (isLocalServer) {
+            document.getElementById('setup').classList.add('hidden');
+            document.querySelector('.settings-btn').style.display = 'none';
+            checkConnection();
+        } else if (!serverUrl) {
             showSetup();
         } else {
             document.getElementById('setup').classList.add('hidden');
