@@ -7,278 +7,45 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23333' width='100' height='100' rx='20'/><text y='.9em' x='50%' text-anchor='middle' font-size='70'>%E2%8F%AF</text></svg>">
     <title>Remote</title>
     <style>
-        * {
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
+        * { box-sizing: border-box; touch-action: manipulation; }
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 4vw;
-            background: #000;
-            padding: 20px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 4vw; background: #000; padding: 20px;
         }
         button {
-            font-size: 6vw;
-            padding: 6vw 8vw;
-            border-radius: 4vw;
-            border: none;
-            background: #333;
-            color: white;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            touch-action: manipulation;
-            transition: transform 0.1s ease, background 0.1s ease;
+            font-size: 6vw; padding: 6vw 8vw; border-radius: 4vw; border: none;
+            background: #333; color: white; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; user-select: none;
+            touch-action: manipulation; transition: transform 0.1s ease, background 0.1s ease;
         }
-        button:active,
-        button.pressed {
-            background: #444;
-            transform: scale(0.97);
-        }
-        .play-pause {
-            font-size: 8vw;
-            padding: 12vw 16vw;
-        }
-        .row {
-            display: flex;
-            gap: 3vw;
-            width: 100%;
-            justify-content: center;
-        }
-        .row button {
-            flex: 1;
-            max-width: 45vw;
-        }
-        .row-3 button {
-            max-width: 30vw;
-            padding: 5vw 2vw;
-            font-size: 4.5vw;
-        }
-        .section-label {
-            font-size: 3vw;
-            color: #666;
-            margin-top: 2vw;
-            margin-bottom: -1vw;
-        }
-
-        /* Settings */
-        .settings-btn {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            font-size: 20px;
-            padding: 10px;
-            background: transparent;
-            opacity: 0.5;
-        }
-        .settings-btn:active {
-            opacity: 1;
-            transform: none;
-        }
-
-        /* Setup overlay */
-        .setup-overlay {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            gap: 20px;
-        }
-        .setup-overlay.hidden {
-            display: none;
-        }
-        .setup-overlay h2 {
-            color: #fff;
-            margin: 0;
-            font-size: 24px;
-        }
-        .setup-overlay p {
-            color: #888;
-            margin: 0;
-            text-align: center;
-            font-size: 14px;
-        }
-        .setup-overlay input {
-            font-size: 18px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            border: 2px solid #333;
-            background: #111;
-            color: #fff;
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-        }
-        .setup-overlay input:focus {
-            outline: none;
-            border-color: #666;
-        }
-        .setup-overlay button {
-            padding: 16px 40px;
-            font-size: 18px;
-        }
-
-        /* Status indicator */
-        .status {
-            position: fixed;
-            bottom: 20px;
-            font-size: 12px;
-            color: #444;
-        }
-        .status.connected {
-            color: #4a4;
-        }
-        .status.error {
-            color: #a44;
-        }
+        button:active { background: #444; transform: scale(0.97); }
+        .play-pause { font-size: 8vw; padding: 12vw 16vw; }
+        .row { display: flex; gap: 3vw; width: 100%; justify-content: center; }
+        .row button { flex: 1; max-width: 45vw; }
+        .row-3 button { max-width: 30vw; padding: 5vw 2vw; font-size: 4.5vw; }
+        .section-label { font-size: 3vw; color: #666; margin-top: 2vw; margin-bottom: -1vw; }
     </style>
 </head>
 <body>
-    <button class="settings-btn" onclick="showSetup()">&#9881;</button>
-
-    <button class="play-pause" onclick="send('/toggle')">Play / Pause</button>
+    <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
 
     <div class="row">
-        <button onclick="send('/vol-down')">Vol -</button>
-        <button onclick="send('/mute')">Mute</button>
-        <button onclick="send('/vol-up')">Vol +</button>
+        <button onclick="fetch('/vol-down')">Vol -</button>
+        <button onclick="fetch('/mute')">Mute</button>
+        <button onclick="fetch('/vol-up')">Vol +</button>
     </div>
 
     <div class="row">
-        <button onclick="send('/fullscreen')">Fullscreen</button>
+        <button onclick="fetch('/fullscreen')">Fullscreen</button>
     </div>
 
     <div class="section-label">Zattoo</div>
     <div class="row row-3">
-        <button onclick="send('/ch-down')">CH -</button>
-        <button onclick="send('/ch-list')">List</button>
-        <button onclick="send('/ch-up')">CH +</button>
+        <button onclick="fetch('/ch-down')">CH -</button>
+        <button onclick="fetch('/ch-list')">List</button>
+        <button onclick="fetch('/ch-up')">CH +</button>
     </div>
-
-    <div class="status" id="status"></div>
-
-    <div class="setup-overlay" id="setup">
-        <h2>Connect to Mac</h2>
-        <p>Select a preset or enter address manually</p>
-        <div style="display: flex; gap: 12px; margin: 10px 0;">
-            <button onclick="usePreset('http://192.168.178.31:9876')" style="padding: 12px 20px; font-size: 16px;">Air</button>
-            <button onclick="usePreset('http://192.168.178.170:9876')" style="padding: 12px 20px; font-size: 16px;">MacBook Pro</button>
-        </div>
-        <p style="color: #666; font-size: 12px;">or enter manually:</p>
-        <input type="text" id="server-input" placeholder="192.168.1.100:9876"
-               inputmode="url" autocapitalize="none" autocorrect="off">
-        <button onclick="saveServer()">Connect</button>
-    </div>
-
-    <script>
-        // If served from the Go server (HTTP), use relative paths - no setup needed
-        const isLocalServer = location.protocol === 'http:';
-        let serverUrl = isLocalServer ? '' : localStorage.getItem('mediaRemoteServer');
-
-        // Check URL params for server (allows sharing links)
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('server')) {
-            serverUrl = params.get('server');
-            localStorage.setItem('mediaRemoteServer', serverUrl);
-        }
-
-        // Show setup only if served from HTTPS (GitHub Pages) and no server configured
-        if (isLocalServer) {
-            document.getElementById('setup').classList.add('hidden');
-            document.querySelector('.settings-btn').style.display = 'none';
-            checkConnection();
-        } else if (!serverUrl) {
-            showSetup();
-        } else {
-            document.getElementById('setup').classList.add('hidden');
-            checkConnection();
-        }
-
-        function showSetup() {
-            document.getElementById('setup').classList.remove('hidden');
-            document.getElementById('server-input').value = serverUrl || '';
-            document.getElementById('server-input').focus();
-        }
-
-        function usePreset(url) {
-            serverUrl = url;
-            localStorage.setItem('mediaRemoteServer', serverUrl);
-            document.getElementById('setup').classList.add('hidden');
-            checkConnection();
-        }
-
-        function saveServer() {
-            let input = document.getElementById('server-input').value.trim();
-            if (!input) return;
-
-            // Clean up input - add http:// if missing, ensure port
-            if (!input.startsWith('http')) {
-                input = 'http://' + input;
-            }
-            if (!input.includes(':9876') && !input.match(/:\d+$/)) {
-                input += ':9876';
-            }
-
-            serverUrl = input;
-            localStorage.setItem('mediaRemoteServer', serverUrl);
-            document.getElementById('setup').classList.add('hidden');
-            checkConnection();
-        }
-
-        // Allow Enter key to submit
-        document.getElementById('server-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') saveServer();
-        });
-
-        function setStatus(text, type) {
-            const el = document.getElementById('status');
-            el.textContent = text;
-            el.className = 'status ' + (type || '');
-        }
-
-        async function checkConnection() {
-            try {
-                const res = await fetch(serverUrl + '/ping', {
-                    method: 'GET',
-                    mode: 'cors'
-                });
-                if (res.ok) {
-                    setStatus('Connected', 'connected');
-                }
-            } catch (e) {
-                setStatus('Not connected - tap gear to configure', 'error');
-            }
-        }
-
-        async function send(endpoint) {
-            if (!serverUrl) {
-                showSetup();
-                return;
-            }
-            try {
-                await fetch(serverUrl + endpoint, { mode: 'cors' });
-            } catch (e) {
-                setStatus('Connection failed', 'error');
-            }
-        }
-
-        // Periodic connection check
-        setInterval(checkConnection, 30000);
-    </script>
 </body>
 </html>
