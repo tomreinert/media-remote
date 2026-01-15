@@ -86,6 +86,7 @@ const fallbackUI = `<!DOCTYPE html>
     </style>
 </head>
 <body>
+	<p>Test</p>
     <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
     <div class="volume-row">
         <button onclick="fetch('/vol-down')">Vol -</button>
