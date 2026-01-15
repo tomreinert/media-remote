@@ -1,6 +1,6 @@
 # Media Remote
 
-A lightweight macOS remote control server that lets you control media playback from any device on your network via a web browser.
+A lightweight macOS remote control server for Netflix, Zattoo, and other media apps. Control playback from your phone via a web browser.
 
 ## Architecture
 
@@ -31,20 +31,26 @@ A lightweight macOS remote control server that lets you control media playback f
 | File | Purpose |
 |------|---------|
 | `media_remote.go` | Go server - fetches UI from GitHub, serves API |
-| `ui/index.html` | The UI - edit this on GitHub to update remotely |
+| `ui/index.html` | The UI - edit on GitHub or via Claude Code web |
 
-## Updating the UI
+## Updating
 
-1. Edit `ui/index.html` on GitHub (or push changes)
-2. Wait ~1-2 min for GitHub's raw CDN cache to clear
+### UI changes (most common)
+No build needed! Just:
+1. Edit `ui/index.html` (via GitHub web, Claude Code, or push)
+2. Wait ~1-2 min for GitHub raw CDN cache
 3. On target Mac: `pkill media-remote && ./media-remote`
 
-No rebuild needed - the server fetches fresh UI on each restart.
+### Server/API changes (rare)
+Only rebuild if changing `media_remote.go`:
+```bash
+GOARCH=amd64 go build -o media-remote-intel media_remote.go
+```
 
 ## Initial Setup (target Mac)
 
 ```bash
-# Build (one-time, or after changing media_remote.go)
+# Build once
 GOARCH=amd64 go build -o media-remote-intel media_remote.go
 
 # Run
@@ -56,7 +62,7 @@ pkill media-remote
 
 ## On Your Phone
 
-Just open the URL shown when the server starts:
+Open the URL shown when server starts:
 ```
 http://<ip>:9876
 ```
@@ -67,15 +73,20 @@ Add to Home Screen for fullscreen experience.
 | Endpoint | Action |
 |----------|--------|
 | `/` | Serves the UI |
-| `/ping` | Health check (returns "pong") |
-| `/setup` | Trigger macOS permission dialogs |
-| `/toggle` | Play/Pause (spacebar keystroke) |
+| `/ping` | Health check |
+| `/toggle` | Play/Pause (spacebar) |
 | `/vol-up` | Volume +10 |
 | `/vol-down` | Volume -10 |
+| `/mute` | Mute toggle (m key) |
+| `/fullscreen` | Fullscreen toggle (f key) |
+| `/ch-up` | Next channel (l key) - Zattoo |
+| `/ch-down` | Previous channel (j key) - Zattoo |
+| `/ch-list` | Channel list (h key) - Zattoo |
+| `/escape` | Escape key |
+| `/enter` | Enter key |
 
 ## Requirements
 
-- macOS (uses AppleScript for system control)
-- Accessibility permissions (System Settings → Privacy & Security → Accessibility)
-- Go 1.21+ for building (not needed if using pre-built binary)
-- Internet connection on target Mac (for fetching UI from GitHub)
+- macOS with Accessibility permissions
+- Internet on target Mac (for fetching UI from GitHub)
+- Go 1.21+ only if rebuilding server
