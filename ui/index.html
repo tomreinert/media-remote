@@ -41,6 +41,11 @@
         .row-small svg { width: 6vw; height: 6vw; }
         .row-small .label { font-size: 2.8vw; }
 
+        .row-secondary { margin-top: 2vw; }
+        .row-secondary button { background: #1c1c1e; width: 28vw; height: 12vw; }
+        .row-secondary .label { font-size: 3.5vw; margin-top: 0; color: #8e8e93; }
+        .row-secondary button.pressed { background: #0a0a0a; }
+
         svg { fill: currentColor; }
     </style>
 </head>
@@ -81,6 +86,15 @@
         </button>
         <button data-action="/ch-up">
             <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+    </div>
+
+    <div class="row row-secondary">
+        <button data-action="/escape">
+            <span class="label">Cancel</span>
+        </button>
+        <button data-action="/enter">
+            <span class="label">OK</span>
         </button>
     </div>
 

@@ -166,6 +166,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		sendKey("h")
 		fmt.Println("Channel list toggle")
 		w.Write([]byte("OK"))
+	case "/escape":
+		exec.Command("osascript", "-e", `tell application "System Events" to key code 53`).Run()
+		fmt.Println("Escape")
+		w.Write([]byte("OK"))
+	case "/enter":
+		exec.Command("osascript", "-e", `tell application "System Events" to key code 36`).Run()
+		fmt.Println("Enter")
+		w.Write([]byte("OK"))
 	case "/":
 		w.Header().Set("Content-Type", "text/html")
 		if cachedUI != "" {
