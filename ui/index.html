@@ -174,13 +174,15 @@
 
     <div class="setup-overlay" id="setup">
         <h2>Connect to Mac</h2>
-        <p>Enter the server address shown when you started media-remote</p>
+        <p>Select a preset or enter address manually</p>
+        <div style="display: flex; gap: 12px; margin: 10px 0;">
+            <button onclick="usePreset('http://192.168.178.31:9876')" style="padding: 12px 20px; font-size: 16px;">Air</button>
+            <button onclick="usePreset('http://192.168.178.170:9876')" style="padding: 12px 20px; font-size: 16px;">MacBook Pro</button>
+        </div>
+        <p style="color: #666; font-size: 12px;">or enter manually:</p>
         <input type="text" id="server-input" placeholder="192.168.1.100:9876"
                inputmode="url" autocapitalize="none" autocorrect="off">
         <button onclick="saveServer()">Connect</button>
-        <p style="margin-top: 20px; font-size: 12px;">
-            Tip: Add to Home Screen for fullscreen experience
-        </p>
     </div>
 
     <script>
@@ -211,6 +213,13 @@
             document.getElementById('setup').classList.remove('hidden');
             document.getElementById('server-input').value = serverUrl || '';
             document.getElementById('server-input').focus();
+        }
+
+        function usePreset(url) {
+            serverUrl = url;
+            localStorage.setItem('mediaRemoteServer', serverUrl);
+            document.getElementById('setup').classList.add('hidden');
+            checkConnection();
         }
 
         function saveServer() {
