@@ -12,8 +12,8 @@
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            gap: 5vw; background: #000; padding: 20px;
+            display: flex; flex-direction: column; justify-content: end; align-items: center;
+            gap: 5vw; background: #000; padding: 32px;
         }
         button {
             border-radius: 16px; border: none;
@@ -21,28 +21,27 @@
             -webkit-tap-highlight-color: transparent; user-select: none;
             touch-action: manipulation;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: transform 0.08s ease, background 0.08s ease;
+            transition: background 0.08s ease;
         }
         button.pressed { background: #1f1f22; }
-        button .label { font-size: 3vw; color: #98989f; margin-top: 1vw; font-weight: 500; }
+        button .label { font-size: 3.5vw; color: #98989f; margin-top: 1vw; font-weight: 500; }
 
-        .play-pause { width: 44vw; height: 44vw; border-radius: 50%; background: #2c2c2e; }
+        .play-pause { width: 100%; height: 28vw; background: #2c2c2e; }
         .play-pause.pressed { background: #1f1f22; }
-        .play-pause svg { width: 12vw; height: 12vw; }
+        .play-pause svg { width: 14vw; height: 14vw; }
 
-        .row { display: flex; gap: 3vw; }
-        .row button { width: 22vw; height: 22vw; }
+        .row { display: flex; gap: 5vw; width: 100%; }
+        .row button { flex: 1; height: 22vw; }
         .row svg { width: 8vw; height: 8vw; }
         .mute-btn svg { width: 6vw; height: 6vw; }
 
         .section-label { font-size: 3.5vw; color: #636366; margin-top: 3vw; margin-bottom: -1vw; font-weight: 500; }
 
-        .row-small button { width: 22vw; height: 18vw; }
+        .row-small button { height: 16vw; }
         .row-small svg { width: 6vw; height: 6vw; }
-        .row-small .label { font-size: 2.8vw; }
 
-        .row-secondary { margin-top: 2vw; }
-        .row-secondary button { background: #1c1c1e; width: 28vw; height: 12vw; }
+        .row-secondary { margin-top: 1vw; }
+        .row-secondary button { background: #1c1c1e; height: 12vw; }
         .row-secondary .label { font-size: 3.5vw; margin-top: 0; color: #8e8e93; }
         .row-secondary button.pressed { background: #0a0a0a; }
 
@@ -51,7 +50,7 @@
 </head>
 <body>
     <button class="play-pause" data-action="/toggle">
-        <svg style="margin-left: 6px;" viewBox="0 0 24 24"><rect x="5" y="5" width="4" height="14" rx="1"/><path d="M12 5v14l8-7z"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="5" y="5" width="4" height="14" rx="1"/><path d="M12 5v14l8-7z"/></svg>
     </button>
 
     <div class="row">
@@ -66,13 +65,6 @@
         <button data-action="/vol-up">
             <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             <span class="label">Vol +</span>
-        </button>
-    </div>
-
-    <div class="row">
-        <button data-action="/fullscreen">
-            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-            <span class="label">Fullscreen</span>
         </button>
     </div>
 
@@ -92,6 +84,9 @@
     <div class="row row-secondary">
         <button data-action="/escape">
             <span class="label">Cancel</span>
+        </button>
+        <button data-action="/fullscreen">
+            <svg viewBox="0 0 24 24" style="width: 5vw; height: 5vw;"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </button>
         <button data-action="/enter">
             <span class="label">OK</span>
