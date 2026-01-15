@@ -50,15 +50,26 @@
             font-size: 8vw;
             padding: 12vw 16vw;
         }
-        .volume-row {
+        .row {
             display: flex;
-            gap: 4vw;
+            gap: 3vw;
             width: 100%;
             justify-content: center;
         }
-        .volume-row button {
+        .row button {
             flex: 1;
-            max-width: 40vw;
+            max-width: 45vw;
+        }
+        .row-3 button {
+            max-width: 30vw;
+            padding: 5vw 2vw;
+            font-size: 4.5vw;
+        }
+        .section-label {
+            font-size: 3vw;
+            color: #666;
+            margin-top: 2vw;
+            margin-bottom: -1vw;
         }
 
         /* Settings */
@@ -138,13 +149,25 @@
     </style>
 </head>
 <body>
-    <p>Test 1</p>
     <button class="settings-btn" onclick="showSetup()">&#9881;</button>
 
     <button class="play-pause" onclick="send('/toggle')">Play / Pause</button>
-    <div class="volume-row">
+
+    <div class="row">
         <button onclick="send('/vol-down')">Vol -</button>
+        <button onclick="send('/mute')">Mute</button>
         <button onclick="send('/vol-up')">Vol +</button>
+    </div>
+
+    <div class="row">
+        <button onclick="send('/fullscreen')">Fullscreen</button>
+    </div>
+
+    <div class="section-label">Zattoo</div>
+    <div class="row row-3">
+        <button onclick="send('/ch-down')">CH -</button>
+        <button onclick="send('/ch-list')">List</button>
+        <button onclick="send('/ch-up')">CH +</button>
     </div>
 
     <div class="status" id="status"></div>

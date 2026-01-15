@@ -16,6 +16,10 @@ const uiURL = "https://raw.githubusercontent.com/tomreinert/media-remote/main/ui
 
 var cachedUI string
 
+func sendKey(key string) {
+	exec.Command("osascript", "-e", fmt.Sprintf(`tell application "System Events" to keystroke "%s"`, key)).Run()
+}
+
 func sendSpace() {
 	exec.Command("osascript", "-e", `tell application "System Events" to keystroke space`).Run()
 }
@@ -81,16 +85,27 @@ const fallbackUI = `<!DOCTYPE html>
         }
         button:active { background: #444; transform: scale(0.97); }
         .play-pause { font-size: 8vw; padding: 12vw 16vw; }
-        .volume-row { display: flex; gap: 4vw; width: 100%; justify-content: center; }
-        .volume-row button { flex: 1; max-width: 40vw; }
+        .row { display: flex; gap: 3vw; width: 100%; justify-content: center; }
+        .row button { flex: 1; max-width: 45vw; }
+        .row-3 button { max-width: 30vw; padding: 5vw 2vw; font-size: 4.5vw; }
+        .section-label { font-size: 3vw; color: #666; margin-top: 2vw; margin-bottom: -1vw; }
     </style>
 </head>
 <body>
-	<p>Test</p>
     <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
-    <div class="volume-row">
+    <div class="row">
         <button onclick="fetch('/vol-down')">Vol -</button>
+        <button onclick="fetch('/mute')">Mute</button>
         <button onclick="fetch('/vol-up')">Vol +</button>
+    </div>
+    <div class="row">
+        <button onclick="fetch('/fullscreen')">Fullscreen</button>
+    </div>
+    <div class="section-label">Zattoo</div>
+    <div class="row row-3">
+        <button onclick="fetch('/ch-down')">CH -</button>
+        <button onclick="fetch('/ch-list')">List</button>
+        <button onclick="fetch('/ch-up')">CH +</button>
     </div>
 </body>
 </html>`
@@ -130,6 +145,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case "/vol-down":
 		volumeDown()
 		fmt.Println("Volume down")
+		w.Write([]byte("OK"))
+	case "/mute":
+		sendKey("m")
+		fmt.Println("Mute toggle")
+		w.Write([]byte("OK"))
+	case "/fullscreen":
+		sendKey("f")
+		fmt.Println("Fullscreen toggle")
+		w.Write([]byte("OK"))
+	case "/ch-up":
+		sendKey("l")
+		fmt.Println("Channel up")
+		w.Write([]byte("OK"))
+	case "/ch-down":
+		sendKey("j")
+		fmt.Println("Channel down")
+		w.Write([]byte("OK"))
+	case "/ch-list":
+		sendKey("h")
+		fmt.Println("Channel list toggle")
 		w.Write([]byte("OK"))
 	case "/":
 		w.Header().Set("Content-Type", "text/html")
