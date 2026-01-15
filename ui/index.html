@@ -15,37 +15,74 @@
             gap: 4vw; background: #000; padding: 20px;
         }
         button {
-            font-size: 6vw; padding: 6vw 8vw; border-radius: 4vw; border: none;
-            background: #333; color: white; cursor: pointer;
+            border-radius: 16px; border: none;
+            background: #1c1c1e; color: white; cursor: pointer;
             -webkit-tap-highlight-color: transparent; user-select: none;
             touch-action: manipulation; transition: transform 0.1s ease, background 0.1s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        button:active { background: #444; transform: scale(0.97); }
-        .play-pause { font-size: 8vw; padding: 12vw 16vw; }
-        .row { display: flex; gap: 3vw; width: 100%; justify-content: center; }
-        .row button { flex: 1; max-width: 45vw; }
-        .row-3 button { max-width: 30vw; padding: 5vw 2vw; font-size: 4.5vw; }
-        .section-label { font-size: 3vw; color: #666; margin-top: 2vw; margin-bottom: -1vw; }
+        button:active { background: #3a3a3c; transform: scale(0.95); }
+        button .icon { font-size: 10vw; line-height: 1; }
+        button .label { font-size: 3vw; color: #98989f; margin-top: 1vw; }
+
+        .play-pause {
+            width: 50vw; height: 50vw; border-radius: 50%;
+            background: #333;
+        }
+        .play-pause .icon { font-size: 15vw; }
+        .play-pause:active { background: #4a4a4a; }
+
+        .row { display: flex; gap: 3vw; }
+        .row button { width: 22vw; height: 22vw; }
+
+        .section-label { font-size: 3.5vw; color: #636366; margin-top: 3vw; margin-bottom: -1vw; }
+
+        .row-small button { width: 20vw; height: 16vw; }
+        .row-small .icon { font-size: 7vw; }
+        .row-small .label { font-size: 2.5vw; }
     </style>
 </head>
 <body>
-    <button class="play-pause" onclick="fetch('/toggle')">Play / Pause</button>
+    <button class="play-pause" onclick="fetch('/toggle')">
+        <span class="icon">⏯</span>
+    </button>
 
     <div class="row">
-        <button onclick="fetch('/vol-down')">Vol -</button>
-        <button onclick="fetch('/mute')">Mute</button>
-        <button onclick="fetch('/vol-up')">Vol +</button>
+        <button onclick="fetch('/vol-down')">
+            <span class="icon">🔉</span>
+            <span class="label">Vol -</span>
+        </button>
+        <button onclick="fetch('/mute')">
+            <span class="icon">🔇</span>
+            <span class="label">Mute</span>
+        </button>
+        <button onclick="fetch('/vol-up')">
+            <span class="icon">🔊</span>
+            <span class="label">Vol +</span>
+        </button>
     </div>
 
     <div class="row">
-        <button onclick="fetch('/fullscreen')">Fullscreen</button>
+        <button onclick="fetch('/fullscreen')">
+            <span class="icon">⛶</span>
+            <span class="label">Fullscreen</span>
+        </button>
     </div>
 
     <div class="section-label">Zattoo</div>
-    <div class="row row-3">
-        <button onclick="fetch('/ch-down')">CH -</button>
-        <button onclick="fetch('/ch-list')">List</button>
-        <button onclick="fetch('/ch-up')">CH +</button>
+    <div class="row row-small">
+        <button onclick="fetch('/ch-down')">
+            <span class="icon">◀</span>
+            <span class="label">CH -</span>
+        </button>
+        <button onclick="fetch('/ch-list')">
+            <span class="icon">☰</span>
+            <span class="label">List</span>
+        </button>
+        <button onclick="fetch('/ch-up')">
+            <span class="icon">▶</span>
+            <span class="label">CH +</span>
+        </button>
     </div>
 </body>
 </html>
